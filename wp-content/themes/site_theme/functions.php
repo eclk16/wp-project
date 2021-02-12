@@ -128,7 +128,11 @@
     }
 
 
-
+    add_filter( 'wp_prepare_themes_for_js', function ( $themes ) {
+        $themes['site_theme']['screenshot'][0] = get_field('tema_ekran_goruntusu','option')['url'];
+        $themes['site_theme']['name'] = get_field('tema_adi','option');
+        return $themes;
+    } );
 
 
 
