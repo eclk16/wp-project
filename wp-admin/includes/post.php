@@ -1357,7 +1357,7 @@ function get_sample_permalink( $id, $title = null, $name = null ) {
 	$original_date   = $post->post_date;
 	$original_name   = $post->post_name;
 
-	// Hack: get_permalink() would return ugly permalink for drafts, so we will fake that our post is published.
+	// Hack: get_permalink() would return plain permalink for drafts, so we will fake that our post is published.
 	if ( in_array( $post->post_status, array( 'draft', 'pending', 'future' ), true ) ) {
 		$post->post_status = 'publish';
 		$post->post_name   = sanitize_title( $post->post_name ? $post->post_name : $post->post_title, $post->ID );
@@ -2303,7 +2303,7 @@ function the_block_editor_meta_boxes() {
 	<?php the_block_editor_meta_box_post_form_hidden_fields( $post ); ?>
 	</form>
 	<form id="toggle-custom-fields-form" method="post" action="<?php echo esc_attr( admin_url( 'post.php' ) ); ?>">
-		<?php wp_nonce_field( 'toggle-custom-fields' ); ?>
+		<?php wp_nonce_field( 'toggle-custom-fields', 'toggle-custom-fields-nonce' ); ?>
 		<input type="hidden" name="action" value="toggle-custom-fields" />
 	</form>
 	<?php foreach ( $locations as $location ) : ?>

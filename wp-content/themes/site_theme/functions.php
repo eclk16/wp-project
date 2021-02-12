@@ -77,6 +77,8 @@
                 'icerik_cogul' => get_sub_field('icerik_cogul'),
                 'icerik_tekil' => get_sub_field('icerik_tekil'),
                 'icerik_cogul_slug' => get_sub_field('icerik_cogul_slug'),
+                'icerik_tekil_slug' => get_sub_field('icerik_cogul_slug'),
+                'taxonomy' => get_sub_field('taxonomy')
             ));
         endwhile;
     endif;
@@ -110,6 +112,17 @@
             'has_archive' => true,
             'rewrite' => array('slug' => '', 'with_front' => false)
         );
+        if($array['taxonomy']=='Var'){
+            register_taxonomy(
+                $array['icerik_tekil_slug']."-kategori", array($array['icerik_cogul_slug']), array(
+                    "hierarchical" => true,
+                    "label" => $array['icerik_tekil']." Kategorileri",
+                    "singular_label" => $array['icerik_tekil']." Kategorileri",
+                    "show_admin_column" => true,
+                    "rewrite" => true));
+            register_taxonomy_for_object_type($array['icerik_tekil_slug'].'-kategori', $array['icerik_cogul_slug']);
+        }
+        
 
         register_post_type( $array['icerik_cogul_slug'] , $args);
     }

@@ -7,7 +7,7 @@ Author: Arshid
 Author URI: http://ciphercoin.com/
 Text Domain: contact-form-cfdb7
 Domain Path: /languages/
-Version: 1.2.5.6
+Version: 1.2.5.8
 */
 
 function cfdb7_create_table(){
@@ -110,17 +110,23 @@ function cfdb7_before_send_mail( $form_tag ) {
 
     $submission   = WPCF7_Submission::get_instance();
     $contact_form = $submission->get_contact_form();
-    $tags         = $contact_form->scan_form_tags();
     $tags_names   = array();
-
-    foreach( $tags as $tag ){
-        if( ! empty($tag->name) ) $tags_names[] = $tag->name;
-    }
+    $strict_keys  = apply_filters('cfdb7_strict_keys', false);  
 
     if ( $submission ) {
 
+        $allowed_tags = array();
+
+        if( $strict_keys ){
+            $tags  = $contact_form->scan_form_tags();
+            foreach( $tags as $tag ){
+                if( ! empty($tag->name) ) $tags_names[] = $tag->name;
+            }
+            $allowed_tags = $tags_names;
+        }
+
         $not_allowed_tags = apply_filters( 'cfdb7_not_allowed_tags', array( 'g-recaptcha-response' ) );
-        $allowed_tags     = apply_filters( 'cfdb7_allowed_tags', $tags_names );
+        $allowed_tags     = apply_filters( 'cfdb7_allowed_tags', $allowed_tags );
         $data             = $submission->get_posted_data();
         $files            = $submission->uploaded_files();
         $uploaded_files   = array();
@@ -139,7 +145,7 @@ function cfdb7_before_send_mail( $form_tag ) {
         $form_data['cfdb7_status'] = 'unread';
         foreach ($data as $key => $d) {
             
-            if( !in_array($key, $allowed_tags) ) continue;
+            if( $strict_keys && !in_array($key, $allowed_tags) ) continue;
 
             if ( !in_array($key, $not_allowed_tags ) && !in_array($key, $uploaded_files )  ) {
 
@@ -203,7 +209,7 @@ function cfdb7_init(){
 
         do_action( 'cfdb7_admin_init' );
 
-        $csv = new Export_CSV();
+        $csv = new CFDB7_Export_CSV();
         if( isset($_REQUEST['csv']) && ( $_REQUEST['csv'] == true ) && isset( $_REQUEST['nonce'] ) ) {
 
             $nonce  = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
